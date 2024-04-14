@@ -22,6 +22,7 @@ export function SignUp() {
           alt="People working out"
           resizeMode="contain"
           position="absolute"
+          defaultSource={BackgroundImg}
         />
 
         <Center my={24}>

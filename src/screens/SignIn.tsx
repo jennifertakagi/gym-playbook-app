@@ -23,6 +23,7 @@ export function SignIn() {
           alt="Pessoas treinando"
           resizeMode="contain"
           position="absolute"
+          defaultSource={BackgroundImg}
         />
 
         <Center my={24}>
