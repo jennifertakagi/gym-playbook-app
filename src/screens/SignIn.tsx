@@ -40,8 +40,10 @@ export function SignIn() {
           secureTextEntry
         />
 
-        <Button title="Login" />
+        <Button title="Sign in" />
       </Center>
+
+      <Button title="Sign up" variant="outline" />
     </VStack>
   );
 }
