@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Center, ScrollView, VStack, Skeleton, Text, Heading } from 'native-base';
+import { Center, ScrollView, VStack, Skeleton, Text, Heading, useTheme } from 'native-base';
 
 import { ScreenHeader } from '@components/ScreenHeader';
 import { UserPhoto } from '@components/UserPhoto';
@@ -18,7 +18,7 @@ export function Profile() {
     <VStack flex={1}>
       <ScreenHeader title='Profile' />
 
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt={6} px={10}>
           {
             photoIsLoading ?
@@ -53,11 +53,9 @@ export function Profile() {
             placeholder="Email"
             isDisabled
           />
-        </Center>
 
-        <VStack px={10} mt={12} mb={9}>
-          <Heading color="gray.200" fontSize="md" mb={2}>
-            Change password
+          <Heading color="gray.200" fontSize="md" mb={2} alignSelf="flex-start" mt={12}>
+            Update password
           </Heading>
 
           <Input
@@ -78,8 +76,8 @@ export function Profile() {
             secureTextEntry
           />
 
-          <Button title="Save" mt={4} />
-        </VStack>
+          <Button title="Update" mt={4} />
+        </Center>
       </ScrollView>
     </VStack>
   );
