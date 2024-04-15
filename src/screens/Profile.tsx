@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Center, ScrollView, VStack, Skeleton, Text } from 'native-base';
+import { Center, ScrollView, VStack, Skeleton, Text, Heading } from 'native-base';
 
 import { ScreenHeader } from '@components/ScreenHeader';
 import { UserPhoto } from '@components/UserPhoto';
 import { Input } from '@components/Input';
+import { Button } from '@components/Button';
 
 
 const PHOTO_SIZE = 33;
@@ -53,6 +54,32 @@ export function Profile() {
             isDisabled
           />
         </Center>
+
+        <VStack px={10} mt={12} mb={9}>
+          <Heading color="gray.200" fontSize="md" mb={2}>
+            Change password
+          </Heading>
+
+          <Input
+            bg="gray.600"
+            placeholder="Current password"
+            secureTextEntry
+          />
+
+          <Input
+            bg="gray.600"
+            placeholder="New password"
+            secureTextEntry
+          />
+
+          <Input
+            bg="gray.600"
+            placeholder="Confirm new password"
+            secureTextEntry
+          />
+
+          <Button title="Save" mt={4} />
+        </VStack>
       </ScrollView>
     </VStack>
   );
