@@ -6,12 +6,27 @@ import BackgroundImg from '@assets/background.png';
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
 
 export function SignUp() {
   const navigation = useNavigation();
 
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+
   function handleGoBack() {
     navigation.goBack();
+  }
+
+  function handleSignUp() {
+    console.log({
+      name,
+      email,
+      password,
+      passwordConfirm
+    });
   }
 
   return (
@@ -39,21 +54,32 @@ export function SignUp() {
           </Heading>
 
           <Input
+            onChangeText={setName}
             placeholder="Nome"
           />
 
           <Input
-            placeholder="Email"
-            keyboardType="email-address"
             autoCapitalize="none"
-
+            keyboardType="email-address"
+            onChangeText={setEmail}
+            placeholder="Email"
           />
           <Input
+            onChangeText={setPassword}
             placeholder="Password"
             secureTextEntry
           />
 
-          <Button title="Create and log in" />
+          <Input
+            onChangeText={setPasswordConfirm}
+            placeholder="Confirm your password"
+            secureTextEntry
+          />
+
+          <Button
+            onPress={handleSignUp}
+            title="Create and log in"
+          />
         </Center>
 
         <Button
