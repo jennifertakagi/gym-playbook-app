@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
-import { Center, ScrollView, VStack, Skeleton, Text, Heading } from 'native-base';
+import { Center, ScrollView, VStack, Skeleton, Text, Heading, useToast } from 'native-base';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 import { ScreenHeader } from '@components/ScreenHeader';
 import { UserPhoto } from '@components/UserPhoto';
@@ -12,6 +13,7 @@ import { Button } from '@components/Button';
 const PHOTO_SIZE = 33;
 
 export function Profile() {
+  const toast = useToast();
 
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState('https://github.com/jennifertakagi.png');
@@ -31,8 +33,21 @@ export function Profile() {
         return;
       }
 
-      if (photoSelected.assets[0].uri) {
-        setUserPhoto(photoSelected.assets[0].uri);
+      const [photo] = photoSelected.assets;
+
+      if (photo.uri) {
+
+        const photoInfo = await FileSystem.getInfoAsync(photo.uri);
+
+        if (photoInfo.exists && (photoInfo.size / 1024 / 1024 > 5)) {
+          return toast.show({
+            title: 'Essa imagem é muito grande. Escolha uma de até 5MB.',
+            placement: 'top',
+            bgColor: 'red.500'
+          })
+        }
+
+        setUserPhoto(photo.uri);
       }
 
     } catch (error) {
