@@ -8,17 +8,24 @@ import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 import { useNavigation } from "@react-navigation/native";
 
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  password_confirm: string;
+}
+
 export function SignUp() {
   const navigation = useNavigation();
 
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>();
 
   function handleGoBack() {
     navigation.goBack();
   }
 
-  function handleSignUp(data: any) {
-    console.log({ data })
+  function handleSignUp({ name, email, password, password_confirm }: FormDataProps) {
+    console.log({ name, email, password, password_confirm })
   }
 
   return (
@@ -50,11 +57,15 @@ export function SignUp() {
             name="name"
             render={({ field: { onChange, value } }) => (
               <Input
+                errorMessage={errors.name?.message}
                 placeholder="Name"
                 onChangeText={onChange}
                 value={value}
               />
             )}
+            rules={{
+              required: 'Name is required.'
+            }}
           />
 
           <Controller
@@ -62,6 +73,7 @@ export function SignUp() {
             name="email"
             render={({ field: { onChange, value } }) => (
               <Input
+                errorMessage={errors.email?.message}
                 placeholder="Email"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -69,6 +81,13 @@ export function SignUp() {
                 value={value}
               />
             )}
+            rules={{
+              required: 'Email is required.',
+              pattern: {
+                value:/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: 'Invalid email.'
+              }
+            }}
           />
 
           <Controller
