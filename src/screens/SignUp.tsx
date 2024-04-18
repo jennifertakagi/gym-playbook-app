@@ -1,5 +1,7 @@
 import { VStack, Image, Text, Center, Heading, ScrollView } from "native-base";
 import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import LogoSvg from '@assets/logo.svg';
 import BackgroundImg from '@assets/background.png';
@@ -15,10 +17,19 @@ type FormDataProps = {
   password_confirm: string;
 }
 
+const signUpSchema = yup.object({
+  name: yup.string().required('Name is required.'),
+  email: yup.string().required('Email is required').email('Email is not valid.'),
+  password: yup.string().required('Password is required').min(6, 'Password needs to have at least 6 characters.'),
+  password_confirm: yup.string().required('Confirm password.').oneOf([yup.ref('password'), null], 'The confirmation does not match.')
+});
+
 export function SignUp() {
   const navigation = useNavigation();
 
-  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>();
+  const { control, handleSubmit, formState: { errors } } = useForm<FormDataProps>({
+    resolver: yupResolver(signUpSchema),
+  });
 
   function handleGoBack() {
     navigation.goBack();
@@ -63,9 +74,6 @@ export function SignUp() {
                 value={value}
               />
             )}
-            rules={{
-              required: 'Name is required.'
-            }}
           />
 
           <Controller
@@ -81,13 +89,6 @@ export function SignUp() {
                 value={value}
               />
             )}
-            rules={{
-              required: 'Email is required.',
-              pattern: {
-                value:/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: 'Invalid email.'
-              }
-            }}
           />
 
           <Controller
@@ -95,6 +96,7 @@ export function SignUp() {
             name="password"
             render={({ field: { onChange, value } }) => (
               <Input
+                errorMessage={errors.password?.message}
                 placeholder="Password"
                 secureTextEntry
                 onChangeText={onChange}
@@ -108,6 +110,7 @@ export function SignUp() {
             name="password_confirm"
             render={({ field: { onChange, value } }) => (
               <Input
+                errorMessage={errors.password_confirm?.message}
                 placeholder="Confirm your password"
                 secureTextEntry
                 onChangeText={onChange}
@@ -128,7 +131,7 @@ export function SignUp() {
           title="Back to login"
           variant="outline"
           onPress={handleGoBack}
-          mt={15}
+          mt={12}
         />
       </VStack>
     </ScrollView>
