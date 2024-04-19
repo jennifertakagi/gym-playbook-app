@@ -102,7 +102,10 @@ export function SignIn() {
             )}
           />
 
-          <Button title="Sign in" />
+          <Button
+            title="Sign in"
+            onPress={handleSubmit(handleSignIn)}
+          />
         </Center>
 
         <Center mt={18}>
@@ -115,7 +118,7 @@ export function SignIn() {
           isLoading={isLoading}
           title="Sign up"
           variant="outline"
-          onPress={handleSubmit(handleNewAccount)}
+          onPress={handleNewAccount}
         />
       </VStack>
     </ScrollView>

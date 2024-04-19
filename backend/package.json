@@ -9,7 +9,6 @@
     "migrate": "knex migrate:latest",
     "seed": "knex seed:run"
   },
-  "author": "Rodrigo Gonçalves Santana",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
