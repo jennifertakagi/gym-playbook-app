@@ -19,8 +19,8 @@ type FormDataProps = {
   name: string;
   email: string;
   password: string;
-  oldPassword: string;
-  newPassword: string;
+  old_password: string;
+  confirm_password: string;
 }
 
 export function Profile() {
@@ -30,7 +30,7 @@ export function Profile() {
 
   const toast = useToast();
   const { user } = useAuth();
-  const { control } = useForm<FormDataProps>({ defaultValues: {
+  const { control, handleSubmit } = useForm<FormDataProps>({ defaultValues: {
     name: user.name,
     email: user.email
    } });
@@ -74,9 +74,13 @@ export function Profile() {
     }
   }
 
+  async function handleProfileUpdate(data: FormDataProps) {
+    console.log(data);
+  }
+
   return (
     <VStack flex={1}>
-      <ScreenHeader title='Profile' />
+      <ScreenHeader title='Perfil' />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt={6} px={10}>
@@ -136,25 +140,50 @@ export function Profile() {
             Update password
           </Heading>
 
-          <Input
-            bg="gray.600"
-            placeholder="Current password"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="old_password"
+            render={({ field: { onChange } }) => (
+              <Input
+                bg="gray.600"
+                placeholder="Old password"
+                secureTextEntry
+                onChangeText={onChange}
+              />
+            )}
           />
 
-          <Input
-            bg="gray.600"
-            placeholder="New password"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange } }) => (
+              <Input
+                bg="gray.600"
+                placeholder="New password"
+                secureTextEntry
+                onChangeText={onChange}
+              />
+            )}
           />
 
-          <Input
-            bg="gray.600"
-            placeholder="Confirm new password"
-            secureTextEntry
+          <Controller
+            control={control}
+            name="confirm_password"
+            render={({ field: { onChange } }) => (
+              <Input
+                bg="gray.600"
+                placeholder="Confirm password"
+                secureTextEntry
+                onChangeText={onChange}
+              />
+            )}
           />
 
-          <Button title="Update" mt={4} />
+          <Button
+            title="Update"
+            mt={4}
+            onPress={handleSubmit(handleProfileUpdate)}
+          />
         </Center>
       </ScrollView>
     </VStack>
