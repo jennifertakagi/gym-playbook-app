@@ -93,8 +93,29 @@ export function Profile() {
           })
         }
 
-        setUserPhoto(photo.uri);
-      }
+        const fileExtension = photo.uri.split('.').pop();
+
+        const photoFile = {
+          name: `${user.name}.${fileExtension}`.toLowerCase(),
+          uri: photo.uri,
+          type: `${photo.type}/${fileExtension}`
+        } as any;
+
+      const userPhotoUploadForm = new FormData();
+
+      userPhotoUploadForm.append('avatar', photoFile);
+
+      await api.patch('/users/avatar', userPhotoUploadForm, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      toast.show({
+        title: 'Photo updated!',
+        placement: 'top',
+        bgColor: 'green.500'
+      })      }
 
     } catch (error) {
       console.log(error)
@@ -104,7 +125,6 @@ export function Profile() {
   }
 
   async function handleProfileUpdate(data: FormDataProps) {
-    console.log(data);
     try {
       setIsUpdating(true);
 
