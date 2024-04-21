@@ -26,9 +26,24 @@ type FormDataProps = {
 }
 
 const profileSchema = yup.object({
-  name: yup.string().required('Name is required'),
-  password: yup.string().min(6, 'Password has to have at least 6 characters.').nullable().transform((value) => !!value ? value : null),
-  confirm_password: yup.string().nullable().transform((value) => !!value ? value : null).oneOf([yup.ref('password'), null], 'Passwords are not the same.'),
+  name: yup
+    .string()
+    .required('Name is required'),
+  password: yup
+    .string()
+    .min(6, 'Password needs to have at least 6 characters.')
+    .nullable()
+    .transform((value) => !!value ? value : null),
+  confirm_password: yup
+    .string()
+    .nullable()
+    .transform((value) => !!value ? value : null)
+    .oneOf([yup.ref('password'), null], 'Passwords are not the same')
+    .when('password', {
+      is: (Field: any) => Field,
+      then: (schema) =>
+        schema.nullable().required('Password confirmation is required.'),
+    }),
 })
 
 export function Profile() {
