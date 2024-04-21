@@ -7,6 +7,9 @@ import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import * as yup from 'yup';
 
+import { api } from '@services/api';
+import { AppError } from '@utils/AppError';
+
 import { useAuth } from '@hooks/useAuth';
 
 import { ScreenHeader } from '@components/ScreenHeader';
@@ -47,9 +50,9 @@ const profileSchema = yup.object({
 })
 
 export function Profile() {
-
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState('https://github.com/jennifertakagi.png');
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const toast = useToast();
   const { user } = useAuth();
@@ -102,11 +105,32 @@ export function Profile() {
 
   async function handleProfileUpdate(data: FormDataProps) {
     console.log(data);
+    try {
+      setIsUpdating(true);
+      await api.put('/users', data);
+
+      toast.show({
+        title: 'Profile updated!',
+        placement: 'top',
+        bgColor: 'green.500'
+      });
+    } catch (error) {
+      const isAppError = error instanceof AppError;
+      const title = isAppError ? error.message : 'Error on updating profile. Try again later!';
+
+      toast.show({
+        title,
+        placement: 'top',
+        bgColor: 'red.500'
+      })
+    } finally {
+      setIsUpdating(false);
+    }
   }
 
   return (
     <VStack flex={1}>
-      <ScreenHeader title='Perfil' />
+      <ScreenHeader title='Profile' />
 
       <ScrollView contentContainerStyle={{ paddingBottom: 36 }}>
         <Center mt={6} px={10}>
@@ -214,6 +238,7 @@ export function Profile() {
             title="Update"
             mt={4}
             onPress={handleSubmit(handleProfileUpdate)}
+            isLoading={isUpdating}
           />
         </Center>
       </ScrollView>
