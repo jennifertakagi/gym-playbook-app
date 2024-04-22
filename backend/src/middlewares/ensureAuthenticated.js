@@ -1,28 +1,39 @@
-const { verify } = require("jsonwebtoken");
+const knex = require("../database");
 const AppError = require("../utils/AppError");
-const authConfig = require("../configs/auth");
+const GenerateRefreshToken = require("../providers/GenerateRefreshToken");
+const GenerateToken = require("../providers/GenerateToken");
+const dayjs = require("dayjs");
 
-async function ensureAuthenticated(request, response, next) {
-  const authHeader = request.headers.authorization;
+class UserRefreshToken {
+  async create(request, response) {
+    const { refresh_token } = request.body;
 
-  if (!authHeader) {
-    throw new AppError("JWT token não informado", 401);
-  }
+    if (!refresh_token) {
+      throw new AppError("Informe o token de autenticação.", 401);
+    }
 
-  const [, token] = authHeader.split(" ");
+    const refreshToken = await knex("refresh_token").where({ refresh_token }).first();
 
-  try {
+    if (!refreshToken) {
+      throw new AppError("Refresh token não encontrado para este usuário.", 401);
+    }
 
-    const { sub: user_id } = verify(token, authConfig.jwt.secret);
+    const generateTokenProvider = new GenerateToken();
+    const token = await generateTokenProvider.execute(refreshToken.user_id);
 
-    request.user = {
-      id: Number(user_id),
-    };
+    const refreshTokenExpired = dayjs().isAfter(dayjs.unix(refreshToken.expires_in));
 
-    return next();
-  } catch {
-    throw new AppError("token.expired", 401);
+    if (refreshTokenExpired) {
+      await knex("refresh_token").where({ user_id: refreshToken.user_id }).delete();
+
+      const generateRefreshToken = new GenerateRefreshToken();
+      const newRefreshToken = await generateRefreshToken.execute(refreshToken.user_id, refresh_token);
+
+      return response.json({ token, refresh_token: newRefreshToken });
+    }
+
+    return response.json({ token, refresh_token });
   }
 }
 
-module.exports = ensureAuthenticated;
+module.exports = UserRefreshToken;
