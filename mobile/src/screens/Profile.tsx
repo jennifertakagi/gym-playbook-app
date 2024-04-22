@@ -17,6 +17,7 @@ import { UserPhoto } from '@components/UserPhoto';
 import { Input } from '@components/Input';
 import { Button } from '@components/Button';
 
+import defaulUserPhotoImg from '@assets/userPhotoDefault.png';
 
 const PHOTO_SIZE = 33;
 
@@ -51,7 +52,6 @@ const profileSchema = yup.object({
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
-  const [userPhoto, setUserPhoto] = useState('https://github.com/jennifertakagi.png');
   const [isUpdating, setIsUpdating] = useState(false);
 
   const toast = useToast();
@@ -105,11 +105,17 @@ export function Profile() {
 
       userPhotoUploadForm.append('avatar', photoFile);
 
-      await api.patch('/users/avatar', userPhotoUploadForm, {
+      const avatarUpdtedResponse =  await api.patch('/users/avatar', userPhotoUploadForm, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
+
+      const userUpdated = user;
+
+      userUpdated.avatar = avatarUpdtedResponse.data.avatar;
+
+      await updateUserProfile(userUpdated);
 
       toast.show({
         title: 'Photo updated!',
@@ -171,7 +177,11 @@ export function Profile() {
               />
             :
               <UserPhoto
-                source={{ uri: userPhoto }}
+                source={
+                  user.avatar
+                  ? { uri: `${api.defaults.baseURL}/avatar/${user.avatar}` }
+                  : defaulUserPhotoImg
+                }
                 alt="User avatar"
                 size={PHOTO_SIZE}
               />
